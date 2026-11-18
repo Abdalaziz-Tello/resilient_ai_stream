@@ -1,0 +1,20 @@
+name: Dart validation
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed lib test example
+      - run: dart analyze --fatal-infos
+      - run: dart test
+      - run: dart run example/resilient_ai_stream_example.dart
+      - run: dart compile js test/support/web_smoke.dart -o /tmp/web_smoke.js
+      - run: node -e 'globalThis.self = globalThis; require("/tmp/web_smoke.js")'
+      - run: dart compile js test/support/web_transport_smoke.dart -o /tmp/web_transport_smoke.js
+      - run: node test/support/web_transport_smoke.js /tmp/web_transport_smoke.js
