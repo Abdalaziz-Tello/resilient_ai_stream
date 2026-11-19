@@ -12,7 +12,6 @@ topics:
   - sse
   - streaming
   - claude
-  - rag
   - openai
 
 environment:
